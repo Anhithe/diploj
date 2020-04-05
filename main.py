@@ -19,6 +19,10 @@ class PatientResp(BaseModel):
 def root():
     return {"message": "Hello World"}
 
+@app.get('/num/{p}')
+def counter(p):
+    return str(p)
+
 @app.post("/patient")
 def create_patient(rq: PatientRq):
     app.counter += 1
@@ -27,6 +31,6 @@ def create_patient(rq: PatientRq):
 @app.get("/patient/{pk}")
 def patient_finder(pk):
     if pk > app.counter:
-        raise HTTPException(status_code=404, detail="Item not found")
+        raise HTTPException(status_code=204, detail="No content")
     return PatientRq
 
