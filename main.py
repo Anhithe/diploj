@@ -30,7 +30,7 @@ def create_patient(rq: PatientRq):
 
 @app.get("/patient/{pk}")
 def patient_finder(pk):
-    if pk == 0:
+    if int(pk) > app.counter:
         raise HTTPException(status_code=204, detail="No content")
     return PatientRq(name="NAME", surename="SURENAME")
 
