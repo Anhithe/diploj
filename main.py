@@ -1,6 +1,6 @@
 # main.py
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 app = FastAPI()
@@ -19,13 +19,14 @@ class PatientResp(BaseModel):
 def root():
     return {"message": "Hello World"}
 
-@app.get('/counter')
-def counter():
-    app.counter += 1
-    return str(app.counter)
-
 @app.post("/patient")
 def create_patient(rq: PatientRq):
     app.counter += 1
     return PatientResp(id=str(app.counter), patient=rq.dict())
+
+@app.get("/patient/{pk}")
+def patient_finder(pk):
+    if pk > app.counter:
+        raise HTTPException(status_code=404, detail="Item not found")
+    return PatientRq
 
