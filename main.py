@@ -32,5 +32,5 @@ def create_patient(rq: PatientRq):
 def patient_finder(pk):
     if pk > app.counter:
         raise HTTPException(status_code=204, detail="No content")
-    return PatientRq
+    return PatientRq(name="NAME", surename="SURENAME")
 
