@@ -24,8 +24,8 @@ def counter():
     app.counter += 1
     return str(app.counter)
 
-@app.get("/patient")
+@app.post("/patient")
 def create_patient(rq: PatientRq):
     app.counter += 1
-    return PatientResp(id=str(app.counter), patient=rq.dict())
+    return PatientResp(id=app.counter.str(), patient=rq.dict())
 
