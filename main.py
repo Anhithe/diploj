@@ -11,7 +11,7 @@ class PatientRq(BaseModel):
     surename: str
 
 class PatientResp(BaseModel):
-    id: int
+    id: str
     patient: dict
 
 
@@ -25,7 +25,7 @@ def counter():
     return str(app.counter)
 
 @app.get("/patient")
-def create_patient(rq: PatientRq, ):
+def create_patient(rq: PatientRq):
     app.counter += 1
-    return PatientResp(id=app.counter, patient=rq.dict())
+    return PatientResp(id=str(app.counter), patient=rq.dict())
 
