@@ -19,8 +19,12 @@ class PatientResp(BaseModel):
 def root():
     return {"message": "Hello World"}
 
+@app.get('/counter')
+def counter():
+    app.counter += 1
+    return str(app.counter)
 
-@app.post("/patient")
+@app.get("/patient")
 def create_patient(rq: PatientRq, ):
     app.counter += 1
     return PatientResp(id=app.counter, patient=rq.dict())
