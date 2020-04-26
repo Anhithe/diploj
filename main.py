@@ -39,6 +39,4 @@ def patient_finder(pk):
         raise HTTPException(status_code=204, detail="No content")
     return PatientRq(name="NAME", surename="SURENAME")
 
-@app.get("/login")
-def read_current_user(username: str = Depends(get_current_username)):
-    return {"username": username}
+
