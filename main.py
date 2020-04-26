@@ -32,6 +32,7 @@ def get_current_username(credentials: HTTPBasicCredentials = Depends(security)):
 
 @app.post("/login")
 def read_current_user(credentials: HTTPBasicCredentials = Depends(security)):
+    get_current_username(credentials: HTTPBasicCredentials = Depends(security))
     response = RedirectResponse(url='/welcome')
     return response
 
