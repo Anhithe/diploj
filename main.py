@@ -1,10 +1,11 @@
 # main.py
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Cookie, Response
 from pydantic import BaseModel
 
 app = FastAPI()
 app.counter = 0
+app.secret_key = "very constant and random secret, best 64 characters"
 
 class PatientRq(BaseModel):
     name: str
@@ -38,3 +39,18 @@ def patient_finder(pk):
         raise HTTPException(status_code=204, detail="No content")
     return PatientRq(name="NAME", surename="SURENAME")
 
+
+def get_current_username(credentials: HTTPBasicCredentials = Depends(security)):
+    correct_username = secrets.compare_digest(credentials.username, "trudnY")
+    correct_password = secrets.compare_digest(credentials.password, "PaC13Nt")
+    if not (correct_username and correct_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+            headers={"WWW-Authenticate": "Basic"},
+        )
+    return credentials.username
+
+@app.get("/login")
+def read_current_user(username: str = Depends(get_current_username)):
+    return {"username": username}
