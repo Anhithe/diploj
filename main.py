@@ -2,6 +2,7 @@
 
 from fastapi import FastAPI, HTTPException, Cookie, Response
 from pydantic import BaseModel
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
 app = FastAPI()
 app.counter = 0
@@ -39,4 +40,8 @@ def patient_finder(pk):
         raise HTTPException(status_code=204, detail="No content")
     return PatientRq(name="NAME", surename="SURENAME")
 
+security = HTTPBasic()
+@app.get("/login")
+def read_current_user(credentials: HTTPBasicCredentials = Depends(security)):
+    return {"username": credentials.username, "password": credentials.password}
 
