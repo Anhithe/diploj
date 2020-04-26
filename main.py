@@ -23,6 +23,10 @@ def root():
 def counter(p):
     return str(p)
 
+@app.get("/welcome")
+def txt():
+    return "no elo"
+
 @app.post("/patient")
 def create_patient(rq: PatientRq):
     app.counter += 1
