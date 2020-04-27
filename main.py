@@ -43,18 +43,7 @@ def txt(request: Request, credentials: HTTPBasicCredentials = Depends(security))
             detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Basic"},
         )
-    return """
-    <html>
-        <head>
-            <title>Some HTML in here</title>
-        </head>
-        <body id="greeting" >
-            <h1 id="greeting" >Hello, trudnY!</h1>
-        </body>
-    </html>
-    """
-
-#templates.TemplateResponse("item.html", {"request": request, "user": "trudnY"})
+    return templates.TemplateResponse("item.html", {"request": request, "user": "trudnY"})
 
 
 
