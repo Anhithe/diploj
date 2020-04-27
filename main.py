@@ -3,9 +3,10 @@
 from fastapi import FastAPI, HTTPException, Cookie, Response, Depends, status, Request
 from pydantic import BaseModel
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
-from starlette.responses import RedirectResponse
+from starlette.responses import RedirectResponse, HTMLResponse
 import secrets
 from fastapi.templating import Jinja2Templates
+
 
 
 app = FastAPI()
@@ -42,7 +43,7 @@ def txt(request: Request, credentials: HTTPBasicCredentials = Depends(security))
             detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Basic"},
         )
-    return templates.TemplateResponse("item.html", {"request": request, "my_string": "trudnY"})
+    return templates.TemplateResponse("item.html", {"request": request, "user": "trudnY"})
 
 
 
