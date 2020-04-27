@@ -35,7 +35,7 @@ def txt(request: Request, session_token: str = Cookie(None)):
 
 
 @app.post("/login")
-def read_current_user(credentials: HTTPBasicCredentials = Depends(security)):
+def read_current_user(reponse:Response, credentials: HTTPBasicCredentials = Depends(security)):
     correct_username = secrets.compare_digest(credentials.username, "trudnY")
     correct_password = secrets.compare_digest(credentials.password, "PaC13Nt")
     if not (correct_username and correct_password):
