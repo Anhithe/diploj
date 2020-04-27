@@ -33,7 +33,7 @@ def read_current_user(credentials: HTTPBasicCredentials = Depends(security)):
     response = RedirectResponse(url='/welcome')
     return response
 
-@app.get("/welcome")
+@app.get("/welcome",response_class=HTMLResponse)
 def txt(request: Request, credentials: HTTPBasicCredentials = Depends(security)):
     correct_username = secrets.compare_digest(credentials.username, "trudnY")
     correct_password = secrets.compare_digest(credentials.password, "PaC13Nt")
@@ -43,7 +43,18 @@ def txt(request: Request, credentials: HTTPBasicCredentials = Depends(security))
             detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Basic"},
         )
-    return templates.TemplateResponse("item.html", {"request": request, "user": "trudnY"})
+    return """
+    <html>
+        <head>
+            <title>Some HTML in here</title>
+        </head>
+        <body>
+            <h1 id=greeting >Hello, trudnY!</h1>
+        </body>
+    </html>
+    """
+
+#templates.TemplateResponse("item.html", {"request": request, "user": "trudnY"})
 
 
 
