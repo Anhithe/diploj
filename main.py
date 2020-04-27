@@ -1,3 +1,11 @@
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+
+app = FastAPI()
+app.ID = 0
+app.patients = {}
+app.session_tokens = []
+app.secret_key = "very constant and random secret, best 64 characters, here it is."
 from fastapi.templating import Jinja2Templates
 from fastapi import Cookie, Request
 
