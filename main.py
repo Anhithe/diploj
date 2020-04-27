@@ -24,25 +24,18 @@ def root():
 security = HTTPBasic()
 
 @app.get("/welcome")
-def txt(request: Request, session_token: str = Cookie(None)):
-    if session_token not in app.session_tokens:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password",
-        )
-    return templates.TemplateResponse("item.html", {"request": request, "user": "trudnY"})
+def do_welcome(request: Request, session_token: str = Cookie(None)):
+	if session_token not in app.session_tokens:
+		raise HTTPException(status_code=401, detail="Unathorised")
+	return templates.TemplateResponse("item.html", {"request": request, "user": "trudnY"})
 
 
-
-@app.post("/login")
-def read_current_user(reponse:Response, credentials: HTTPBasicCredentials = Depends(security)):
+@app.get("/login")
+def get_current_user(response: Response, credentials: HTTPBasicCredentials = Depends(security)):
     correct_username = secrets.compare_digest(credentials.username, "trudnY")
     correct_password = secrets.compare_digest(credentials.password, "PaC13Nt")
     if not (correct_username and correct_password):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password",
-        )
+        raise HTTPException(status_code=401, detail="Incorrect email or password")
     session_token = sha256(bytes(f"{credentials.username}{credentials.password}{app.secret_key}", encoding='utf8')).hexdigest()
     app.session_tokens.append(session_token)
     response.set_cookie(key="session_token", value=session_token)
@@ -52,13 +45,9 @@ def read_current_user(reponse:Response, credentials: HTTPBasicCredentials = Depe
 
 
 
-
-@app.post("/logout")
+@app.get("/logout")
 def logout(* , response: Response, session_token: str = Cookie(None)):
     if session_token not in app.session_tokens:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password",
-        )
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect email or password")
     app.session_tokens.remove(session_token)
     return RedirectResponse(url='/')
