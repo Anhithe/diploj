@@ -53,41 +53,7 @@ def logout(*, response: Response, session_token: str = Cookie(None)):
     return RedirectResponse("/")
 
 
-### TASK 5 ###########################################################
-@app.post("/patient")
-def add_patient(response: Response, patient: PatientRq, session_token: str = Cookie(None)):
-    if session_token not in app.session_tokens:
-        raise HTTPException(status_code=401, detail="Unathorised")
-    if app.ID not in app.patients.keys():
-        app.patients[app.ID] = patient.dict()
-        app.ID += 1
-    response.set_cookie(key="session_token", value=session_token)
-    response.headers["Location"] = f"/patient/{app.ID - 1}"
-    response.status_code = status.HTTP_302_FOUND
 
 
-@app.get("/patient")
-def display_patients(response: Response, session_token: str = Cookie(None)):
-    if session_token not in app.session_tokens:
-        raise HTTPException(status_code=401, detail="Unathorised")
-    return app.patients
 
-
-@app.get("/patient/{id}")
-def display_patient(response: Response, id: int, session_token: str = Cookie(None)):
-    if session_token not in app.session_tokens:
-        raise HTTPException(status_code=401, detail="Unathorised")
-    response.set_cookie(key="session_token", value=session_token)
-    if id in app.patients.keys():
-        return app.patients[id]
-
-
-@app.delete("/patient/{id}")
-def delete_patient(response: Response, id: int, session_token: str = Cookie(None)):
-    if session_token not in app.session_tokens:
-        raise HTTPException(status_code=401, detail="Unathorised")
-    app.patients.pop(id, None)
-    response.status_code = status.HTTP_204_NO_CONTENT
-    #
-    #
 
