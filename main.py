@@ -1,13 +1,15 @@
 # main.py
 
-from fastapi import FastAPI, HTTPException, Cookie, Response, Depends, status
+from fastapi import FastAPI, HTTPException, Cookie, Response, Depends, status, Request
 from pydantic import BaseModel
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from starlette.responses import RedirectResponse
 import secrets
+from fastapi.templating import Jinja2Templates
+
 
 app = FastAPI()
-app.counter = 0
+templates = Jinja2Templates(directory="templates")
 
 @app.get("/")
 def root():
@@ -31,9 +33,20 @@ def read_current_user(credentials: HTTPBasicCredentials = Depends(security)):
     return response
 
 @app.get("/welcome")
-def txt():
+def txt(credentials: HTTPBasicCredentials = Depends(security)):
+    correct_username = secrets.compare_digest(credentials.username, "trudnY")
+    correct_password = secrets.compare_digest(credentials.password, "PaC13Nt")
+    if not (correct_username and correct_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+            headers={"WWW-Authenticate": "Basic"},
+        )
     return "no elo"
 
+@app.get("/items/{id}")
+def read_item(request: Request, id: str):
+    return templates.TemplateResponse("item.html", {"request": request, "my_string": "trudnY")
 
 
 @app.post("/logout")
