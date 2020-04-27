@@ -13,10 +13,6 @@ app.counter = 0
 def root():
     return {"message": "Hello World"}
 
-@app.get("/welcome")
-def txt():
-    return "no elo"
-
 
 security = HTTPBasic()
 
@@ -33,6 +29,12 @@ def read_current_user(credentials: HTTPBasicCredentials = Depends(security)):
         )
     response = RedirectResponse(url='/welcome')
     return response
+
+@app.get("/welcome")
+def txt():
+    return "no elo"
+
+
 
 @app.post("/logout")
 def logout():
