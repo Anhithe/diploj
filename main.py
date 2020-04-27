@@ -10,6 +10,7 @@ from fastapi.templating import Jinja2Templates
 
 
 app = FastAPI()
+app.session_tokens = []
 templates = Jinja2Templates(directory="templates")
 
 @app.get("/")
@@ -30,8 +31,7 @@ def read_current_user(credentials: HTTPBasicCredentials = Depends(security)):
             detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Basic"},
         )
-    session_token = sha256(
-        bytes(f"{credentials.username}{credentials.password}{app.secret_key}", encoding='utf8')).hexdigest()
+    session_token = sha256(bytes(f"{credentials.username}{credentials.password}{app.secret_key}", encoding='utf8')).hexdigest()
     app.session_tokens.append(session_token)
     response.set_cookie(key="session_token", value=session_token)
     response.headers["Location"] = "/welcome"
