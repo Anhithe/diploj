@@ -33,7 +33,7 @@ def read_current_user(credentials: HTTPBasicCredentials = Depends(security)):
     return response
 
 @app.get("/welcome")
-def txt(credentials: HTTPBasicCredentials = Depends(security)):
+def txt(request: Request, credentials: HTTPBasicCredentials = Depends(security)):
     correct_username = secrets.compare_digest(credentials.username, "trudnY")
     correct_password = secrets.compare_digest(credentials.password, "PaC13Nt")
     if not (correct_username and correct_password):
@@ -42,11 +42,9 @@ def txt(credentials: HTTPBasicCredentials = Depends(security)):
             detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Basic"},
         )
-    return "no elo"
+    return templates.TemplateResponse("item.html", {"request": request, "my_string": "trudnY"})
 
-@app.get("/items/{id}")
-def read_item(request: Request, id: str):
-    return templates.TemplateResponse("item.html", {"request": request, "my_string": "trudnY")
+
 
 
 @app.post("/logout")
