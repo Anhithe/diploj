@@ -35,5 +35,6 @@ def read_current_user(credentials: HTTPBasicCredentials = Depends(security)):
     return response
 
 @app.post("/logout")
+def logout():
     response = RedirectResponse(url='/')
     return response
