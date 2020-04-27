@@ -48,8 +48,8 @@ def txt(request: Request, credentials: HTTPBasicCredentials = Depends(security))
         <head>
             <title>Some HTML in here</title>
         </head>
-        <body>
-            <h1 id=greeting >Hello, trudnY!</h1>
+        <body id="greeting" >
+            <h1 id="greeting" >Hello, trudnY!</h1>
         </body>
     </html>
     """
