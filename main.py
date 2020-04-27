@@ -30,14 +30,16 @@ def read_current_user(credentials: HTTPBasicCredentials = Depends(security)):
             detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Basic"},
         )
-    response = RedirectResponse(url='/welcome')
-    return response
+    session_token = sha256(
+        bytes(f"{credentials.username}{credentials.password}{app.secret_key}", encoding='utf8')).hexdigest()
+    app.session_tokens.append(session_token)
+    response.set_cookie(key="session_token", value=session_token)
+    response.headers["Location"] = "/welcome"
+    response.status_code = status.HTTP_302_FOUND
 
-@app.get("/welcome",response_class=HTMLResponse)
-def txt(request: Request, credentials: HTTPBasicCredentials = Depends(security)):
-    correct_username = secrets.compare_digest(credentials.username, "trudnY")
-    correct_password = secrets.compare_digest(credentials.password, "PaC13Nt")
-    if not (correct_username and correct_password):
+@app.get("/welcome")
+def txt(request: Request, session_token: str = Cookie(None)):
+    if session_token not in app.session_tokens:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
@@ -49,6 +51,13 @@ def txt(request: Request, credentials: HTTPBasicCredentials = Depends(security))
 
 
 @app.post("/logout")
-def logout():
+def logout(* , response: Response, session_token: str = Cookie(None)):
+    if session_token not in app.session_tokens:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+            headers={"WWW-Authenticate": "Basic"},
+        )
+    app.session_tokens.remove(session_token)
     response = RedirectResponse(url='/')
     return response
