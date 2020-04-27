@@ -20,16 +20,6 @@ def txt():
 
 security = HTTPBasic()
 
-def get_current_username(credentials: HTTPBasicCredentials = Depends(security)):
-    correct_username = secrets.compare_digest(credentials.username, "trudnY")
-    correct_password = secrets.compare_digest(credentials.password, "PaC13Nt")
-    if not (correct_username and correct_password):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password",
-            headers={"WWW-Authenticate": "Basic"},
-        )
-    return credentials.username
 
 @app.post("/login")
 def read_current_user(credentials: HTTPBasicCredentials = Depends(security)):
@@ -44,3 +34,6 @@ def read_current_user(credentials: HTTPBasicCredentials = Depends(security)):
     response = RedirectResponse(url='/welcome')
     return response
 
+@app.post("/logout")
+    response = RedirectResponse(url='/')
+    return response
