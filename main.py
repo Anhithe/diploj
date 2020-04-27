@@ -61,5 +61,4 @@ def logout(* , response: Response, session_token: str = Cookie(None)):
             detail="Incorrect email or password",
         )
     app.session_tokens.remove(session_token)
-    response = RedirectResponse(url='/')
-    return response
+    return RedirectResponse(url='/')
