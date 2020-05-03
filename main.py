@@ -1,6 +1,5 @@
 import sqlite3
 from fastapi import FastAPI, HTTPException
-import pytest
 
 app = FastAPI()
 
@@ -23,5 +22,5 @@ async def composer(composer_name: str):
     if not tracks:
         raise HTTPException(status_code=404, detail="error")
     return {
-        "composer": composer_name,
+        "tracks": tracks,
     }
