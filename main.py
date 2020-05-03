@@ -1,58 +1,30 @@
-from fastapi import FastAPI, HTTPException
+import sqlite3
+from fastapi import FastAPI
 from pydantic import BaseModel
-from hashlib import sha256
-from starlette.responses import RedirectResponse
-from fastapi.security import HTTPBasic, HTTPBasicCredentials
-from fastapi import Depends, Response, status
-import secrets
 
 app = FastAPI()
-app.ID = 0
-app.patients = {}
-app.session_tokens = []
-app.secret_key = "very constant and random secret, best 64 characters, here it is."
-from fastapi.templating import Jinja2Templates
-from fastapi import Cookie, Request
-
-templates = Jinja2Templates(directory="templates")
 
 
-@app.get("/welcome")
-def do_welcome(request: Request, session_token: str = Cookie(None)):
-    if session_token not in app.session_tokens:
-        raise HTTPException(status_code=401, detail="Unathorised")
-    return templates.TemplateResponse("item.html", {"request": request, "user": "trudnY"})
+@app.on_event("startup")
+async def startup():
+    app.db_connection = sqlite3.connect('chinook.db')
 
 
-
-security = HTTPBasic()
-
-
-@app.post("/login")
-def get_current_user(response: Response, credentials: HTTPBasicCredentials = Depends(security)):
-    correct_username = secrets.compare_digest(credentials.username, "trudnY")
-    correct_password = secrets.compare_digest(credentials.password, "PaC13Nt")
-    if not (correct_username and correct_password):
-        raise HTTPException(status_code=401, detail="Incorrect email or password")
-    session_token = sha256(
-        bytes(f"{credentials.username}{credentials.password}{app.secret_key}", encoding='utf8')).hexdigest()
-    app.session_tokens.append(session_token)
-    response.set_cookie(key="session_token", value=session_token)
-    response.headers["Location"] = "/welcome"
-    response.status_code = status.HTTP_302_FOUND
+@app.on_event("shutdown")
+async def shutdown():
+    app.db_connection.close()
 
 
+@app.get("/")
+def root():
+    return "Welcome to the jungle"
 
 
-@app.post("/logout")
-def logout(*, response: Response, session_token: str = Cookie(None)):
-    if session_token not in app.session_tokens:
-        raise HTTPException(status_code=401, detail="Unathorised")
-    app.session_tokens.remove(session_token)
-    return RedirectResponse("/")
-
-
-
-
-
-
+@app.get("/tracks/{page}/{per_page}")
+async def root(page: int = 0, per_page: int = 10):
+    page = page*per_page
+    app.db_connection.row_factory = sqlite3.Row
+    tracks = app.db_connection.execute(
+        "SELECT * FROM tracks ORDER BY TrackId LIMIT :per_page OFFSET :page",
+        {'per_page': per_page, 'page': page}).fetchall()
+    return tracks
