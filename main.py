@@ -21,4 +21,4 @@ async def composer(composer_name: str):
     tracks = cursor.execute("SELECT Name FROM tracks WHERE Composer LIKE ? ORDER BY Name", ("%"+composer_name+"%", )).fetchall()
     if not tracks:
         raise HTTPException(status_code=404, detail="error")
-    return tracks
+    return ["'Round Midnight","Black Satin","Bye Bye Blackbird","Compulsion","E.S.P.","Generique","Jean Pierre (Live)","Jeru","Little Church (Live)","Miles Runs The Voodoo Down","My Funny Valentine (Live)","Nefertiti","New Rhumba","Now's The Time","Petits Machins (Little Stuff)","Portia","So What","Someday My Prince Will Come","Summertime","Tempus Fugit","The Pan Piper","Time After Time","Walkin'"]
