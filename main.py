@@ -20,7 +20,7 @@ def root():
     return "Welcome to the jungle"
 
 
-@app.get("/tracks/{page}/{per_page}")
+@app.get("/tracks/{page}/{per_page}", status_code=200)
 async def root(page: int = 0, per_page: int = 10):
     page = page*per_page
     app.db_connection.row_factory = sqlite3.Row
