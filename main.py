@@ -1,5 +1,5 @@
 import sqlite3
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 
 app = FastAPI()
 
@@ -14,21 +14,10 @@ async def shutdown():
     app.db_connection.close()
 
 
-@app.get("/tracks", status_code=200)
-async def tracker(page: int = 0, per_page: int = 10):
-    page = page*per_page
+@app.get("/tracks/composers/{composer_name}")
+async def composer(composer_name: str):
     app.db_connection.row_factory = sqlite3.Row
-    tracks = app.db_connection.execute(
-        "SELECT * FROM tracks ORDER BY TrackId LIMIT :per_page OFFSET :page",
-        {'per_page': per_page, 'page': page}).fetchall()
-    return tracks
-
-
-@app.get("/tracks/{page}/{per_page}", status_code=200)
-async def tracker(page: int = 0, per_page: int = 10):
-    page = page*per_page
-    app.db_connection.row_factory = sqlite3.Row
-    tracks = app.db_connection.execute(
-        "SELECT * FROM tracks ORDER BY TrackId LIMIT :per_page OFFSET :page",
-        {'per_page': per_page, 'page': page}).fetchall()
+    tracks = app.db_connection.execute("SELECT Name FROM tracks WHERE Composer LIKE ? ORDER BY Name", ("%"+composer_name+"%", )).fetchall()
+    if not tracks:
+        raise HTTPException(status_code=404, detail="error")
     return tracks
