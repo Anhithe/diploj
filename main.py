@@ -14,7 +14,7 @@ async def shutdown():
     app.db_connection.close()
 
 
-@app.get("/tracks/composers/{composer_name}")
+@app.get("/tracks/composers")
 async def composer(composer_name: str):
     tracks = app.db_connection.execute("SELECT Name FROM tracks WHERE Composer LIKE ? ORDER BY Name", ("%"+composer_name+"%", )).fetchall()
     if not tracks:
