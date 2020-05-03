@@ -15,7 +15,7 @@ async def shutdown():
     app.db_connection.close()
 
 
-@app.get("/")
+@app.get("/tracks")
 def root():
     return "Welcome to the jungle"
 
