@@ -14,9 +14,8 @@ async def shutdown():
     app.db_connection.close()
 
 
-@app.get("/tracks/composers")
+@app.get("/tracks/composers/{composer_name}")
 async def composer(composer_name: str):
-    app.db_connection.row_factory = sqlite3.Row
     tracks = app.db_connection.execute("SELECT Name FROM tracks WHERE Composer LIKE ? ORDER BY Name", ("%"+composer_name+"%", )).fetchall()
     if not tracks:
         raise HTTPException(status_code=404, detail="error")
