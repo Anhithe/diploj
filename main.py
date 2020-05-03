@@ -21,6 +21,4 @@ async def composer(composer_name: str):
     tracks = cursor.execute("SELECT Name FROM tracks WHERE Composer LIKE ? ORDER BY Name", ("%"+composer_name+"%", )).fetchall()
     if not tracks:
         raise HTTPException(status_code=404, detail="error")
-    return {
-        "tracks": tracks,
-    }
+    return tracks
