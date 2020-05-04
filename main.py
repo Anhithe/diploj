@@ -30,13 +30,11 @@ async def composer(composer_name: str):
     return tracks
 
 
-@app.post("/albums", status_code=201)
+@app.post("/albums/", status_code=201)
 async def albums_add(album: Album):
     cursor = app.db_connection.execute(
         "INSERT INTO albums (Title, ArtistId) VALUES (?, ?)", (album.title, album.artist_id)
     )
-    if not album.title or album.artist_id:
-        raise HTTPException(status_code=404, detail="error")
     app.db_connection.commit()
     new_album_id = cursor.lastrowid
     app.db_connection.row_factory = sqlite3.Row
