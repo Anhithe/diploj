@@ -31,12 +31,12 @@ async def composer(composer_name: str):
 
 
 @app.post("/albums", status_code=201)
-async def artists_add(album: Album):
-    if not Album:
-        raise HTTPException(status_code=404, detail="error")
+async def albums_add(album: Album):
     cursor = app.db_connection.execute(
         "INSERT INTO albums (Title, ArtistId) VALUES (?, ?)", (album.title, album.artist_id)
     )
+    if not album.title or album.artist_id:
+        raise HTTPException(status_code=404, detail="error")
     app.db_connection.commit()
     new_album_id = cursor.lastrowid
     album = app.db_connection.execute(
@@ -44,3 +44,8 @@ async def artists_add(album: Album):
          FROM albums WHERE AlbumId = ?""",
         (new_album_id,)).fetchone()
     return album
+
+
+@app.get("/albums/{album_id}")
+async def album_getter():
+    return "bitch"
