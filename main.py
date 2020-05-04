@@ -1,7 +1,5 @@
 import sqlite3
 from fastapi import FastAPI, HTTPException
-from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 app = FastAPI()
@@ -22,11 +20,6 @@ async def shutdown():
     app.db_connection.close()
 
 
-@app.exception_handler(RequestValidationError)
-async def validation_exception_handler(request, exc):
-    return JSONResponse(status_code=404, content="error")
-
-
 @app.get("/tracks/composers/")
 async def composer(composer_name: str):
     cursor = app.db_connection.cursor()
@@ -39,6 +32,9 @@ async def composer(composer_name: str):
 
 @app.post("/albums/", status_code=201)
 async def albums_add(album: Album):
+    checker = app.db_connection.execute("SELECT ArtistId FROM artists WHERE ArtistId = ?", (album.artist_id,)).fetchone()
+    if not checker:
+        raise HTTPException(status_code=404, detail="error")
     cursor = app.db_connection.execute(
         "INSERT INTO albums (Title, ArtistId) VALUES (?, ?)", (album.title, album.artist_id)
     )
