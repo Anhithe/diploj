@@ -1,7 +1,13 @@
 import sqlite3
 from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
 
 app = FastAPI()
+
+
+class Album(BaseModel):
+    title: str
+    artist_id: int
 
 
 @app.on_event("startup")
@@ -21,4 +27,20 @@ async def composer(composer_name: str):
     tracks = cursor.execute("SELECT Name FROM tracks WHERE Composer LIKE ? ORDER BY Name", ("%"+composer_name+"%", )).fetchall()
     if not tracks:
         raise HTTPException(status_code=404, detail="error")
-    return ["'Round Midnight","Black Satin","Bye Bye Blackbird","Compulsion","E.S.P.","Generique","Jean Pierre (Live)","Jeru","Little Church (Live)","Miles Runs The Voodoo Down","My Funny Valentine (Live)","Nefertiti","New Rhumba","Now's The Time","Petits Machins (Little Stuff)","Portia","So What","Someday My Prince Will Come","Summertime","Tempus Fugit","The Pan Piper","Time After Time","Walkin'"]
+    return tracks
+
+
+@app.post("/albums", status_code=201)
+async def artists_add(album: Album):
+    if not Album:
+        raise HTTPException(status_code=404, detail="error")
+    cursor = app.db_connection.execute(
+        "INSERT INTO albums (Title, ArtistId) VALUES (?, ?)", (album.title, album.artist_id)
+    )
+    app.db_connection.commit()
+    new_album_id = cursor.lastrowid
+    album = app.db_connection.execute(
+        """SELECT AlbumId AS AlbumId, Title AS Title, ArtistId AS ArtistId
+         FROM albums WHERE AlbumId = ?""",
+        (new_album_id,)).fetchone()
+    return album
