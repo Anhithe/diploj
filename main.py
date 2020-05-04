@@ -39,6 +39,8 @@ async def albums_add(album: Album):
     new_album_id = cursor.lastrowid
     app.db_connection.row_factory = sqlite3.Row
     album = app.db_connection.execute("SELECT * FROM albums WHERE AlbumId = ?", (new_album_id,)).fetchone()
+    if not album:
+        raise HTTPException(status_code=404, detail="error")
     return album
 
 
