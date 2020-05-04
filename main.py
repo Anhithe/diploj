@@ -39,13 +39,14 @@ async def albums_add(album: Album):
         raise HTTPException(status_code=404, detail="error")
     app.db_connection.commit()
     new_album_id = cursor.lastrowid
-    album = app.db_connection.execute(
-        """SELECT AlbumId AS AlbumId, Title AS Title, ArtistId AS ArtistId
-         FROM albums WHERE AlbumId = ?""",
-        (new_album_id,)).fetchone()
+    app.db_connection.row_factory = sqlite3.Row
+    album = app.db_connection.execute("SELECT * FROM albums WHERE AlbumId = ?", (new_album_id,)).fetchone()
     return album
 
 
-@app.get("/albums/{album_id}")
-async def album_getter():
-    return "bitch"
+@app.get("/albums/{album_id}", status_code=200)
+async def album_getter(album_id: int):
+    cursor = app.db_connection.cursor()
+    app.db_connection.row_factory = lambda cursor, x: x[0]
+    album1 = cursor.execute("SELECT * FROM albums WHERE AlbumId = ?", (album_id,)).fetchone()
+    return album1
