@@ -43,10 +43,3 @@ async def albums_add(album: Album):
     album = app.db_connection.execute("SELECT * FROM albums WHERE AlbumId = ?", (new_album_id,)).fetchone()
     return album
 
-
-@app.get("/albums/{album_id}", status_code=200)
-async def album_getter(album_id: int):
-    cursor = app.db_connection.cursor()
-    app.db_connection.row_factory = lambda cursor, x: x[0]
-    album1 = cursor.execute("SELECT * FROM albums WHERE AlbumId = ?", (album_id,)).fetchone()
-    return album1
