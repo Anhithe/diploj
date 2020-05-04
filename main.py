@@ -1,5 +1,7 @@
 import sqlite3
 from fastapi import FastAPI, HTTPException
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 app = FastAPI()
@@ -18,6 +20,11 @@ async def startup():
 @app.on_event("shutdown")
 async def shutdown():
     app.db_connection.close()
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request, exc):
+    return JSONResponse(status_code=404, content="error")
 
 
 @app.get("/tracks/composers/")
@@ -39,8 +46,6 @@ async def albums_add(album: Album):
     new_album_id = cursor.lastrowid
     app.db_connection.row_factory = sqlite3.Row
     album = app.db_connection.execute("SELECT * FROM albums WHERE AlbumId = ?", (new_album_id,)).fetchone()
-    if not album:
-        raise HTTPException(status_code=404, detail="error")
     return album
 
 
